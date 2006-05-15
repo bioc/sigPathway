@@ -1,0 +1,282 @@
+%\VignetteIndexEntry{sigPathway}
+%\VignetteDepends{hgu133a}
+%\VignetteKeywords{Pathway Analysis, Gene Sets}
+%\VignettePackage{sigPathway}
+
+\documentclass[11pt]{article}
+\SweaveOpts{echo=FALSE,engine=R}
+
+\usepackage{hyperref}
+\usepackage[authoryear,round]{natbib}
+\usepackage[margin=1in]{geometry}
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
+
+\begin{document}
+
+\title{\bf sigPathway: Pathway Analysis with Microarray Data}
+\author{Weil Lai$^{1}$, Lu Tian$^{2}$, and Peter Park$^{1,3}$}
+
+\maketitle
+
+\begin{center}
+1. Harvard-Partners Center for Genetics and Genomics, 77 Avenue Louis Pasteur, Boston, MA 02115
+
+2. Department of Preventive Medicine, Feinberg School of Medicine, Northwestern University, 680 North Lake Shore Drive, Chicago, IL 60611
+
+3. Children's Hospital Informatics Program, 300 Longwood Avenue, Boston, MA 02115
+\\
+
+\end{center}
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+\Rpackage{sigPathway} is an R package that performs pathway (gene set)
+analysis on microarray data.  It calculates two gene set statistics,
+the $NT_{k}$ (Q1) and $NE_{k}$ (Q2), by permutation, ranks the
+pathways based on the magnitudes of the two statistical tests, and
+estimates q-values for each pathway \citep{Tian2005}.  The program
+permutes the rows and columns of the expression matrix for $NT_{k}$
+and $NE_{k}$, respectively.  In this vignette, we demonstrate how the
+user can use this package to identify statistically significant
+pathways in their data and export the results to HTML for browsing.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data}
+
+In \cite{Tian2005}, microarray data from patients with diabetes,
+inflammatory myopathies, and Alzheimers' data sets were analyzed.  To
+save disk space, a small portion of the inflammatory myopathies data
+set has been included with \Rpackage{sigPathway} as an example data
+set.  Expression values and annotations for this data set are stored
+in the \Robject{MuscleExample} workspace.  This workspace contains the
+following R objects:
+
+\begin{description}
+\item[tab] a filtered matrix containing expression values from 7/13
+  normal (NORM) and 8/23 inclusion body myositis (IBM) samples.  The row
+  and column names of the matrix correspond to Affymetrix probe set IDs
+  and sample IDs, respectively.  The 5000 probe sets in this matrix
+  represent the most variable probe sets (by expression value) in the
+  15 arrays.
+\item[phenotype] a numeric vector with {\tt NORM} to represent NORM and
+{\tt IBM} to represent IBM
+\item[G] a pathway annotation list containing the pathway's source,
+title, and associated probe set IDs
+
+\end{description}
+
+\noindent
+To load this data set, type 'data(MuscleExample)' after loading the 
+\Robject{sigPathway} package.
+
+The pathways annotated in \Robject{G} were curated from Gene Ontology,
+KEGG, BioCarta, and BioCyc.  Each element {\it within} \Robject{G} is
+a list describing a pathway with the following sub-elements:
+
+\begin{description}
+\item[src] a character vector containing either the pathway ID
+  (for Gene Ontology) or the name of the pathway database
+\item[title] a character vector containing the pathway name
+\item[probes] a character vector containing probe set IDs that are 
+  associated with the pathway (by mapping them to Entrez Gene IDs)
+\end{description}
+
+\noindent
+The full inflammatory myopathway data set and pathway annotations for
+other, selected Affymetrix microarray platforms are available at
+\url{http://www.chip.org/~ppark/Supplements/PNAS05.html}.  For
+example, the more comprehensive pathway annotation list for the
+Affymetrix HG-U133A platform is called {\it GenesetsU133a}.  For arrays
+not listed on the website (or for scenarios such as linkage analysis),
+the user can make his/her own pathway annotations and use them in
+\Robject{sigPathway} as long as the pathway annotations are arranged
+in the above format.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Example}
+
+In this section, we show the R code necessary to conduct pathway analysis
+with \Rpackage{sigPathway} on an example data set.
+
+First, we load \Rpackage{sigPathway} and the example data set into
+memory.  If we are dealing with the full data set, we could remove
+probe sets that have expression values less than the trimmed mean in
+all of the arrays.  We assume that the probe sets with lower
+expression values across all arrays are not of interest.  The trimmed
+mean was used as the filtering criteron in \cite{Tian2005}.  The probe
+sets in the example data set were selected for their variance across
+15 arrays (not shown).
+
+<<echo=TRUE,print=FALSE>>=
+library(sigPathway)
+data(MuscleExample)
+ls()
+
+@
+
+For microarray data, the convention is to use rows and columns to
+represent probe sets and individual arrays, respectively.  To tell the
+program which column in \Robject{tab} belongs to which phenotype, we
+have created an indicator vector with {\tt NORM} to represent NORM and
+{\tt IBM} to represent IBM.  Alternatively, we could have used {\tt 0}
+and {\tt 1} to represent NORM and IBM.  Note that the row names for
+\Robject{tab} are probe set IDs.
+
+<<echo=TRUE,print=FALSE>>=
+dim(tab)
+print(tab[501:504, 1:3])
+table(phenotype)
+
+@ 
+
+How much do IBM and NORM samples differ?  Let us
+plot the unadjusted p-values for each probe set from the 2 group
+(sample) t-test, assuming unequal variances and using the Welch
+approximation to estimate the appropriate degrees of freedom.
+
+\begin{center}
+<<PSIDhist,fig=TRUE,echo=TRUE,print=FALSE>>=
+statList <- calcTStatFast(tab, phenotype, ngroups = 2)
+hist(statList$pval, breaks = seq(0,1,0.025), xlab = "p-value",
+     ylab = "Frequency", main = "")
+@ 
+\end{center}
+
+The two different types of samples are certainly very different by the
+probe set level, but which pathways are driving the differences?  With
+our pathway annotations, we calculate the $NT_{k}$ and $NE_{k}$
+statistics for each gene set, and rank the top pathways based on the
+magnitude of the two statistics.  The result is stored in a list
+(\Robject{res.muscle}), of which we will later use to write results to
+HTML.
+
+<<echo=TRUE,print=FALSE>>=
+set.seed(1234)
+res.muscle <-
+  runSigPathway(G, 20, 500, tab, phenotype, nsim = 1000,
+                weightType = "constant", ngroups = 2, npath = 25, 
+                verbose = FALSE, allpathways = FALSE, annotpkg = "hgu133a",
+                alwaysUseRandomPerm = FALSE)
+@ 
+
+The \Rfunction{set.seed} function is used here only for the purpose of
+getting the exact results when regenerating this vignette from
+its source files.
+
+Because there can be many thousands of pathways represented in the
+pathway annotations, we have chosen to analyze pathways that contain
+at least 20 probe sets as represented in \Robject{tab}.  We also
+exclude pathways represented by more than 500 probe sets because
+larger pathways tend to be non-specific.  These two values were the
+ones used in \cite{Tian2005}.  To save space, our pathway annotation
+list has already been filtered with the above criteria.  So, all of
+the \Sexpr{length(G)} pathways in \Robject{G} will be considered in
+the calculations.
+
+The run time of the $NT_{k}$ and $NE_{k}$ is approximately linearly
+proportional to \Robject{nsim}, or the maximum number of permutations.
+When \Robject{alwaysUseRandomPerm} is set to {\tt FALSE} (the default
+value), the program will use a smaller \Robject{nsim} for the $NE_{k}$
+calculations and switch to using complete permutation if the total
+number of unique permutations for the phenotype is less than
+\Robject{nsim}.
+
+We are setting \Robject{weightType} to 'constant' because of the
+additional time required to calculate variable weights for $NE_{k}$.
+If the histogram of unadjusted p-values (of the probe sets) is nearly
+horizontal, and we later observe high q-values (i.e., approaching 1)
+for the top ranked pathways, then setting \Robject{weightType} to
+'variable' would help lower some of the $NE_{k}$ q-values.
+
+To rank the pathways, the program adds up the ranks corresponding to
+the magnitudes of $NT_{k}$ and $NE_{k}$.  When \Robject{npath} is set
+to 25 and \Robject{allpathways} to FALSE, the program considers the
+top 25 pathways for each gene set statistic before summing the
+individual ranks.  If \Robject{allpathways} is set to {\tt TRUE}, then all
+pathways are ranked for each gene set statistic before summing the
+individual ranks.  Here, \Robject{allpathways} is set to {\tt FALSE} because
+we are interested in observing pathways that are consistently highly
+ranked for each gene set statistic.
+
+Also, please note that out of the numerous input parameters to
+\Rfunction{runSigPathway}, \Robject{annotpkg} is optional because it
+refers to a Bioconductor metadata package that may not already be
+present on your installation of R.  In our example, 'hgu133a' refers
+to the BioConductor metadata package of the Affymetrix HG-U133A
+platform.  By specifying 'hgu133a' for \Robject{annotpkg},
+\Rfunction{runSigPathway} will include the accession number, Entrez
+Gene ID, gene symbol, and gene name of probe sets associated with each
+pathway in the list of top pathways.
+
+Printed below are a table of the top pathways, the set size, the
+$NT_{k}$ and $NE_{k}$ statistics, and the statistics' ranks and
+q-values.  This table is accessible through the following command:
+
+<<echo=TRUE,print=FALSE>>=
+print(res.muscle$df.pathways)
+@ 
+
+The negative signs on the gene set statistics indicate that the
+corresponding pathways are more lowly expressed in NORM compared to
+IBM.  Had we defined {\tt 1} for NORM and {\tt 0} for IBM, the signs
+for the gene set statistics would have been flipped.
+
+Detailed information about each probe set in each pathway on the list
+of top pathways are stored in the \Robject{list.gPS}, an element
+within \Robject{res.muscle}.  \Robject{list.gPS} is a list containing
+data frames describing the probe sets for each top pathway.  For
+example, let us view the annotations and test statistics for 10
+probe sets in the {\it MHC class I receptor activity} pathway.
+
+<<echo=TRUE,print=FALSE>>=
+print(res.muscle$list.gPS[[2]][1:10, ])
+@ 
+
+A much more intuitive method to browse through the results is to write
+the results to HTML, which can then be read by an Internet browser
+program (e.g., Firefox, Internet Explorer).  Writing the results can
+be achieved with the \Rfunction{writeSigPathway} function.  Please
+refer to the help file of \Rfunction{writeSigPathway} for more details
+on how to save to results to a specific directory.
+
+\noindent
+Figures \ref{fig:toppathways} and \ref{fig:mhc1} show examples of the
+HTML output after running \Rfunction{writeSigPathway} and opening the
+corresponding HTML file in an Internet browser.
+
+\begin{figure}
+\includegraphics[width=\columnwidth]{TopPathwaysTable}
+\caption{List of Top Pathways in Inclusion Body Myositis versus Normal}
+\label{fig:toppathways}
+\begin{center}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\columnwidth]{MHC1}
+\caption{MHC class I receptor activity}
+\label{fig:mhc1}
+\begin{center}
+\end{center}
+\end{figure}
+
+\section{Notes}
+
+This vignette was compiled with the following settings:
+
+<<echo=TRUE,print=FALSE>>=
+print(sessionInfo())
+@
+
+\bibliographystyle{plainnat}
+\bibliography{sigPathway-vignette}
+
+\end{document}

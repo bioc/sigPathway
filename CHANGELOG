@@ -1,0 +1,119 @@
+Change Log for the sigPathway package
+
+* Version 1.1-5
+	- Bug Fix
+	  - 
+	- Changes
+	  - replaced the full inflammatory myopathy example data set with
+	    a subset to reduce overall file size of package and to satisfy
+	    Bioconductor package size requirements
+	  - clarified authorship of R package
+	- Additions
+	  -
+
+* Version 1.1-4
+	- Bug Fix
+	  - adjusted the code so that if the user flips the phenotypes,
+	    the results will stay consistent with each other, even when
+	    the number of unique permutation is small (e.g.,
+	    phenotype = c(0,0,0,1,1,1) has 20 possible unique permutations.
+	    we compare results from the original phenotype to the 19 other,
+	    permuted phenotypes)
+	  - adjusted the code so that when the permuted phenotype is equal
+	    to the unpermuted phenotype, the phenotype is repermuted
+	- Changes
+	  - replaced the .First.lib() in zzz.R with NAMESPACE, 
+            R's name space management system
+	  - split the R and C codes into several files for easier 
+	    maintainability and addition of future features
+	  - modified the R code to reflect changes made to the parameter calls 
+	    in the C code
+	  - modified examples in package documentation to illustrate how one
+	    can use a Bioconductor annotation package (e.g., hgu133a) to
+	    make the results from getPathwayStatistics() more informative
+	  - modified gene set functions so that the phenotypes do not have to
+	    be ordered (done for the purpose of reproducibility)
+	  - modified t_R() and their variants to have the same parameter calls
+	  - replaced t_null_R() and their variants with null_c() and null_R()
+	- Additions
+	  - when ngroups > 2, the f-statistic (from one-way ANOVA, which 
+	    assumes equal variances among different groups) is calculated
+	  - created functions to write results of pathway analysis to HTML
+	    files for the user's benefit
+	  - created functions to check users' inputs and to reduce
+	    code redundancy
+	  - for situations where the number of random permutations is 
+	    less than the number of complete permutations, the program will
+	    use complete permutations (by lexicographical order)
+	    unless specified otherwise
+
+* Version 1.1-3
+	- Bug Fix
+	  - in rare cases, the weight calculation routine could get trapped
+	    in an infinte loop.  The initial value of lambda is now set to
+	    either 0.001 or the smallest eigenvalue greater than 0.001.
+	  - lambda is sometimes not converging to minimize the smallest weight
+	    of a gene set.  This was mitigated with more strigent if() and
+	    while() statements.
+	  - calculate.NEk() is not reporting the correct intermediate values
+	    for t.set (although the much more important and meaningful
+	    t.set.new is correctly calculated).  Intermediate values of t.set
+	    (for those who need it) are adjusted in the R code.
+	- Changes
+	  - revised calc_GSEA() in C source code so that it would only use
+	    sparse matrices.  All relevant functions in C now rely on
+	    sparse matrices.
+	  - replaced calc_NTk() with calc_NGSk() to let the user specify
+	    his vector of test statistic for gene label permutations; NTk
+	    calculations are still handled through calculate.NTk() in R
+	  - made minor grammatical changes to several documentation files
+	- Additions
+	  - added a sentence in calcTStatFast() R documentation to clarify
+	    the expected sign of the t-statistic in the 2-group comparison
+	  - getPathwayStatistics() now allows the user to specify a BioConductor
+	    annotation package to fetch the probes' accession numbers, Entrez
+	    Gene IDs, gene names, and gene symbols.
+	  - new function: calc_NGSk() in C and calculate.NGSk() in R.  Both
+	    functions take in a vector of test statistic for each probe set
+	    for its gene label permutations.  This function is more generalized
+	    than previous versions of calculate.NTk() because the user can now
+	    specify test statistics from other association measures (e.g.,
+	    Wilcoxon)
+	  - new function: rankPathways.NGSk() works like rankPathways() except
+	    the ranking is performed only on one set of pathway analysis results
+	  - new function: getPathwayStatistics.NGSk() works like
+	    getPathwayStatistics() except the arguments take in a vector of
+	    probe test statistics instead of a matrix of expression values and
+	    a phenotype vector
+
+* Version 1.1-2
+	- Bug Fix
+	  - isinf() was replaced with R_FINITE() to account for cases where
+	    some compilers (e.g., in Solaris 2.3) do not define isinf()
+	- Changes
+	  - revised remove_zero_cols() in C source code so that one does not
+	    need to expand the sparse matrix to remove the "zero" columns
+
+* Version 1.1-1
+	- Bug Fix
+	  - repaired typos that resulted in using the wrong phenotypes in 
+	    the 1-sample calculations
+	- Changes
+	  - reimplemented the ranking and q-value code for faster calculations;
+	    the number of permutations specified in the example code was
+	    increased from 100 to 1000 to show this change in speed and to
+	    make the results from the examples more reproducible
+	  - modified the rankPathways function so that (1) it now tells the
+	    percent of probe sets in the pathway that have greater mean in
+	    1 sample compared to another sample and (2) it also allows the
+	    user to specify whether to summarize the top N pathways from each
+	    statistic or the top N pathways when referring to all pathways
+	  - consequently, the input arguments for the rankPathways function
+	    has been revamped; the example code was updated with the newer
+	    set of input arguments
+	  - slight code cleanup to remove redundant lines (e.g., the
+	    calcTStatFast function checked twice to see whether the ngroups
+	    variable contain 1 or 2)
+
+* Version 1.1-0
+	- First public release
