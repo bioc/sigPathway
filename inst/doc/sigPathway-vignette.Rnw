@@ -59,14 +59,14 @@ in the \Robject{MuscleExample} workspace.  This workspace contains the
 following R objects:
 
 \begin{description}
-\item[tab] a filtered matrix containing expression values from 7/13
+\item[tab] a filtered numeric matrix containing expression values from 7/13
   normal (NORM) and 8/23 inclusion body myositis (IBM) samples.  The row
   and column names of the matrix correspond to Affymetrix probe set IDs
   and sample IDs, respectively.  The 5000 probe sets in this matrix
   represent the most variable probe sets (by expression value) in the
   15 arrays.
-\item[phenotype] a numeric vector with {\tt NORM} to represent NORM and
-{\tt IBM} to represent IBM
+\item[phenotype] a character vector with {\tt 0\_NORM} to represent
+NORM and {\tt 1\_IBM} to represent IBM
 \item[G] a pathway annotation list containing the pathway's source,
 title, and associated probe set IDs
 
@@ -74,11 +74,12 @@ title, and associated probe set IDs
 
 \noindent
 To load this data set, type 'data(MuscleExample)' after loading the 
-\Robject{sigPathway} package.
+\Rpackage{sigPathway} package.
 
 The pathways annotated in \Robject{G} were curated from Gene Ontology,
-KEGG, BioCarta, and BioCyc.  Each element {\it within} \Robject{G} is
-a list describing a pathway with the following sub-elements:
+KEGG, BioCarta, BioCyc, and SuperArray.  Each element {\it within}
+\Robject{G} is a list describing a pathway with the following
+sub-elements:
 
 \begin{description}
 \item[src] a character vector containing either the pathway ID
@@ -96,7 +97,7 @@ example, the more comprehensive pathway annotation list for the
 Affymetrix HG-U133A platform is called {\it GenesetsU133a}.  For arrays
 not listed on the website (or for scenarios such as linkage analysis),
 the user can make his/her own pathway annotations and use them in
-\Robject{sigPathway} as long as the pathway annotations are arranged
+\Rpackage{sigPathway} as long as the pathway annotations are arranged
 in the above format.
 
 
@@ -125,10 +126,12 @@ ls()
 For microarray data, the convention is to use rows and columns to
 represent probe sets and individual arrays, respectively.  To tell the
 program which column in \Robject{tab} belongs to which phenotype, we
-have created an indicator vector with {\tt NORM} to represent NORM and
-{\tt IBM} to represent IBM.  Alternatively, we could have used {\tt 0}
-and {\tt 1} to represent NORM and IBM.  Note that the row names for
-\Robject{tab} are probe set IDs.
+have created a character vector with {\tt 0\_NORM} to represent NORM
+and {\tt 1\_IBM} to represent IBM.  Because {\tt 0\_NORM} comes before
+{\tt 1\_IBM} in alphanumeric order, the program internally treats NORM
+as {\tt 0} and IBM as {\tt 1}.  Alternatively, we could have simply
+used the numerals {\tt 0} and {\tt 1} to represent NORM and IBM.  Note
+that the row names for \Robject{tab} are probe set IDs.
 
 <<echo=TRUE,print=FALSE>>=
 dim(tab)
@@ -151,7 +154,7 @@ hist(statList$pval, breaks = seq(0,1,0.025), xlab = "p-value",
 \end{center}
 
 The two different types of samples are certainly very different by the
-probe set level, but which pathways are driving the differences?  With
+probe set level, but what pathways are driving the differences?  With
 our pathway annotations, we calculate the $NT_{k}$ and $NE_{k}$
 statistics for each gene set, and rank the top pathways based on the
 magnitude of the two statistics.  The result is stored in a list
@@ -216,18 +219,19 @@ platform.  By specifying 'hgu133a' for \Robject{annotpkg},
 Gene ID, gene symbol, and gene name of probe sets associated with each
 pathway in the list of top pathways.
 
-Printed below are a table of the top pathways, the set size, the
+Printed below is a table of the top 10 pathways, the set size, the
 $NT_{k}$ and $NE_{k}$ statistics, and the statistics' ranks and
 q-values.  This table is accessible through the following command:
 
 <<echo=TRUE,print=FALSE>>=
-print(res.muscle$df.pathways)
+print(res.muscle$df.pathways[1:10, ])
 @ 
 
-The negative signs on the gene set statistics indicate that the
-corresponding pathways are more lowly expressed in NORM compared to
-IBM.  Had we defined {\tt 1} for NORM and {\tt 0} for IBM, the signs
-for the gene set statistics would have been flipped.
+The positive signs on the gene set statistics indicate that the
+corresponding pathways are more highly expressed in IBM compared to
+NORM.  Had we defined {\tt 1} for NORM and {\tt 0} for IBM, the
+interpretation would remain the same, but we would expect the signs
+for the gene set statistics to be flipped.
 
 Detailed information about each probe set in each pathway on the list
 of top pathways are stored in the \Robject{list.gPS}, an element
@@ -237,15 +241,16 @@ example, let us view the annotations and test statistics for 10
 probe sets in the {\it MHC class I receptor activity} pathway.
 
 <<echo=TRUE,print=FALSE>>=
-print(res.muscle$list.gPS[[2]][1:10, ])
+print(res.muscle$list.gPS[[7]][1:10, ])
 @ 
 
 A much more intuitive method to browse through the results is to write
 the results to HTML, which can then be read by an Internet browser
-program (e.g., Firefox, Internet Explorer).  Writing the results can
-be achieved with the \Rfunction{writeSigPathway} function.  Please
-refer to the help file of \Rfunction{writeSigPathway} for more details
-on how to save to results to a specific directory.
+program (e.g., Mozilla Firefox, Microsoft Internet Explorer).  Writing
+the results can be achieved with the \Rfunction{writeSigPathway}
+function.  Please refer to the help file of
+\Rfunction{writeSigPathway} for more details on how to save to results
+to a specific directory.
 
 \noindent
 Figures \ref{fig:toppathways} and \ref{fig:mhc1} show examples of the

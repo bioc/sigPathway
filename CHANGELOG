@@ -1,15 +1,25 @@
 Change Log for the sigPathway package
 
+* Version 1.1-6
+	- Changes
+	  - switched the ordering of the means in the 2 sample t-statistic
+	    calculations to match the convention used in multtest and other
+	    statistical packages
+	  - because of the above change, the elements within the "phenotype"
+	    vector of the example data are changed from "NORM" and "IBM" to
+	    "0_NORM" and "1_IBM", respectively
+	  - updated the vignette to reflect the changes in the "phenotype"
+	    vector and the sign convention of the t-test
+	  - fixed inconsistencies in the vignette between the R output and
+	    the pre-generated PNG figures
+	  - fixed minor typographical errors in the vignette and the help files
+	
 * Version 1.1-5
-	- Bug Fix
-	  - 
 	- Changes
 	  - replaced the full inflammatory myopathy example data set with
 	    a subset to reduce overall file size of package and to satisfy
 	    Bioconductor package size requirements
 	  - clarified authorship of R package
-	- Additions
-	  -
 
 * Version 1.1-4
 	- Bug Fix

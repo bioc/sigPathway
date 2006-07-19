@@ -15,6 +15,11 @@ Change Logs:
     - Removed t_null_R(), f_null_R(), and z_null_R() in favor of the
       modular function null_c()
     - Added null_R() so that the user can call null_c() from R with .C()
+  - July 14, 2006
+    - By popular request, switched the ordering of the means subtracted
+      in the 2 sample t-statistic calculations to match the conventions and 
+      results users get when replicating the calculations with multtest 
+      (and possibly other Bioconductor packages)
 ************************************************************************/
 
 #include "sigPathway.h"
@@ -133,7 +138,8 @@ void t_R(double *Y, int *nrow, int *ncol,
 	sse[1] += (Y[i + *nrow*j] - mean[1]) * (Y[i + *nrow*j] - mean[1]);
     }
 
-    tV[i] = (mean[0]-mean[1]) / sqrt(sse[0]/(n0)/(n0-1) + sse[1]/(n1)/(n1-1));
+    /* WL: switched the ordering of the means */
+    tV[i] = (mean[1]-mean[0]) / sqrt(sse[0]/(n0)/(n0-1) + sse[1]/(n1)/(n1-1));
 
     if(*calc_pV == 1) {
       dfV[i] = (sse[0]/(n0)/(n0-1) + sse[1]/(n1)/(n1-1)) * 

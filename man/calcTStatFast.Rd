@@ -22,8 +22,9 @@ calcTStatFast(tab, phenotype, ngroups = 2)
   the alphabet is considered as 0.
   
   If \code{ngroups} = 2, the t-test done here is equivalent to a unpaired
-  two-sample t-test, assuming unequal variances.  The sign of the
-  t-statistic is positive if the mean of group 0 is greater than group 1.
+  two-sample t-test, assuming unequal variances.  Please note that as of
+  version 1.1.6, the sign of the t-statistic is positive when the mean
+  of group 1 is greater than the mean of group 0.
   
   If there is only one group in the matrix (e.g., Alzheimer's
   data set as reanalyzed in Tian et al. (2005)), then the phenotype vector

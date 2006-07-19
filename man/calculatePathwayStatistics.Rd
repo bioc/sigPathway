@@ -56,7 +56,7 @@ calculate.NEk(tab, phenotype, gsList, nsim = 1000,
 
   \url{http://www.pnas.org/cgi/doi/10.1073/pnas.0506577102}
 }
-\author{Lu Tian,Peter Park, and Weil Lai}
+\author{Lu Tian, Peter Park, and Weil Lai}
 \examples{
 ## Load in filtered, expression data
 data(MuscleExample)
