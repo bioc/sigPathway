@@ -1,5 +1,13 @@
 Change Log for the sigPathway package
 
+* Version 1.1.7
+	- Changes
+	  - added $(FLIBS) to Makevars (to remove warnings from
+	    R 2.4.0 alpha 20060906 version)
+	  - added check for ENTREZID in Bioconductor annotation packages
+	    (see getPathwayStat.R) because LOCUSID is marked as deprecated
+	    for Bioconductor 1.9 annotation packages
+
 * Version 1.1-6
 	- Changes
 	  - switched the ordering of the means in the 2 sample t-statistic

@@ -99,8 +99,16 @@ getPathwayStatistics <- function(tab, phenotype, G, index, ngroups = 2,
       temp.psid <- as.character(psid.DF$Probes)
       temp.an <-
         unlist(mget(temp.psid, get(paste(annotpkg, "ACCNUM", sep = ""))))
-      temp.ll <-
-        unlist(mget(temp.psid, get(paste(annotpkg, "LOCUSID", sep = ""))))
+
+      ## LOCUSID is marked as deprecated as of Bioconductor 1.9
+      if(exists(paste(annotpkg, "ENTREZID", sep = "")))  {
+        temp.ll <-
+          unlist(mget(temp.psid, get(paste(annotpkg, "ENTREZID", sep = ""))))
+      }else  {
+        temp.ll <-
+          unlist(mget(temp.psid, get(paste(annotpkg, "LOCUSID", sep = ""))))
+      }
+
       temp.gs <-
         unlist(mget(temp.psid, get(paste(annotpkg, "SYMBOL", sep = ""))))
 
@@ -112,7 +120,6 @@ getPathwayStatistics <- function(tab, phenotype, G, index, ngroups = 2,
                        Symbol = temp.gs, Name = temp.gn, psid.DF[,-1])
     }
     
-    ##return(psid.DF)
     resList[[i]] <- psid.DF
   }
   
@@ -163,12 +170,20 @@ getPathwayStatistics.NGSk <-
       temp.psid <- as.character(psid.DF$Probes)
       temp.an <-
         unlist(mget(temp.psid, get(paste(annotpkg, "ACCNUM", sep = ""))))
-      temp.ll <-
-        unlist(mget(temp.psid, get(paste(annotpkg, "LOCUSID", sep = ""))))
+
+      ## LOCUSID is marked as deprecated as of Bioconductor 1.9
+      if(exists(paste(annotpkg, "ENTREZID", sep = "")))  {
+        temp.ll <-
+          unlist(mget(temp.psid, get(paste(annotpkg, "ENTREZID", sep = ""))))
+      }else  {
+        temp.ll <-
+          unlist(mget(temp.psid, get(paste(annotpkg, "LOCUSID", sep = ""))))
+      }
+
       temp.gs <-
         unlist(mget(temp.psid, get(paste(annotpkg, "SYMBOL", sep = ""))))
       
-      ## workaround for annotation bug in BioConductor 1.7 annotations
+      ## workaround for gene names split up in BioConductor 1.7 annotations
       temp.gn1 <- mget(temp.psid, get(paste(annotpkg, "GENENAME", sep = "")))
       temp.gn <- unlist(lapply(temp.gn1, paste, collapse = ";"))
       
