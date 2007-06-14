@@ -33,7 +33,10 @@ getPathwayStatistics.NGSk(statV, probeID, G, index,
   and the corresponding test statistic.
 
   If a valid \code{annotpkg} is specified, the probes' accession
-  numbers, Entrez Gene IDs, gene name, and gene symbols are also returned.
+  numbers, Entrez Gene IDs, gene name, and gene symbols are also
+  returned.  This option only works if the probes in the gene set list
+  \code{G} are manufacturer IDs corresponding to those used in making
+  the BioConductor annotation package.
 }
 \note{See the help page for \code{calculate.NGSk} for example code that
   uses \code{getPathwayStatistics.NGSk}}

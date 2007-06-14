@@ -1,5 +1,18 @@
 Change Log for the sigPathway package
 
+* Version 1.5.1
+	- Changes
+	  - clarified the use of the "annotpkg" option in
+	    getPathwayStatistics.Rd and getPathwayStatistics.NGSk.Rd
+	- Additions
+	  - importGeneSets.R: collection of functions to import gene sets
+	    stored in GMT, GMX, GRP, and XML formats
+	  - importGeneSets.Rd: help file accompanying importGeneSets.R
+
+* Version 1.5.0
+	- Changes
+	  - Version numbering bump for BioConductor 2.1 development
+
 * Version 1.3.1
 	- Changes
 	  - added "latin1" encoding descriptor to one of the pathway titles

@@ -41,7 +41,10 @@ getPathwayStatistics(tab, phenotype, G, index, ngroups = 2,
   returned.
 
   If a valid \code{annotpkg} is specified, the probes' accession
-  numbers, Entrez Gene IDs, gene name, and gene symbols are also returned.
+  numbers, Entrez Gene IDs, gene name, and gene symbols are also
+  returned.  This option only works if the probes in the gene set list
+  \code{G} are manufacturer IDs corresponding to those used in making
+  the BioConductor annotation package.
 }
 \note{See the help page of \code{calculate.NTk} or \code{calculate.NEk}
   for example code that uses \code{getPathwayStatistics}}
