@@ -1,5 +1,12 @@
 Change Log for the sigPathway package
 
+* Version 1.5.2
+	- Bug Fix
+	  - changed one line in .convertDF2HTML() of writeHTML.R to
+	    repair HTML layout bug that takes place when the number of rows
+	    is smaller than the number of columns in the input
+	    data frame
+
 * Version 1.5.1
 	- Changes
 	  - clarified the use of the "annotpkg" option in

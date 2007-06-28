@@ -24,7 +24,7 @@
   nr <- nrow(inputDF)
   nc <- ncol(inputDF)
   
-  output.body <- character(nc)
+  output.body <- character(nr)
   for(i in 1:nc)  {
     temp <- inputDF[[i]]
     if(is.factor(temp))
