@@ -1,5 +1,5 @@
 %\VignetteIndexEntry{sigPathway}
-%\VignetteDepends{hgu133a}
+%\VignetteDepends{hgu133a.db}
 %\VignetteKeywords{Pathway Analysis, Gene Sets}
 %\VignettePackage{sigPathway}
 
