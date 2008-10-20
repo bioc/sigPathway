@@ -96,24 +96,50 @@ getPathwayStatistics <- function(tab, phenotype, G, index, ngroups = 2,
     }
 
     if(!is.null(annotpkg))  {
+      apkgPrefix <- sub("[.]db", "", annotpkg)
       temp.psid <- as.character(psid.DF$Probes)
-      temp.an <-
-        unlist(mget(temp.psid, get(paste(annotpkg, "ACCNUM", sep = ""))))
 
-      ## LOCUSID is marked as deprecated as of Bioconductor 1.9
-      if(exists(paste(annotpkg, "ENTREZID", sep = "")))  {
-        temp.ll <-
-          unlist(mget(temp.psid, get(paste(annotpkg, "ENTREZID", sep = ""))))
+      ## As of Bioconductor 2.3, annotation packages are in SQLite format.
+      ## The below code with 'AnnotationDbi' is an inelegant fix for the
+      ## problem with mget() complaining about inputs
+      if(class(get(paste(apkgPrefix, "ACCNUM", sep = ""))) == "environment")  {
+        temp.an <-
+          unlist(mget(temp.psid, get(paste(apkgPrefix, "ACCNUM", sep = ""))))
+
+        ## LOCUSID is marked as deprecated as of Bioconductor 1.9
+        if(exists(paste(apkgPrefix, "ENTREZID", sep = "")))  {
+          temp.ll <-
+            unlist(mget(temp.psid, get(paste(apkgPrefix, "ENTREZID", sep = ""))))
+        }else  {
+          temp.ll <-
+            unlist(mget(temp.psid, get(paste(apkgPrefix, "LOCUSID", sep = ""))))
+        }
+
+        temp.gs <-
+          unlist(mget(temp.psid, get(paste(apkgPrefix, "SYMBOL", sep = ""))))
+
+        ## workaround for gene names split up in BioConductor 1.7 annotations
+        temp.gn1 <- mget(temp.psid, get(paste(apkgPrefix, "GENENAME", sep = "")))
       }else  {
-        temp.ll <-
-          unlist(mget(temp.psid, get(paste(annotpkg, "LOCUSID", sep = ""))))
+        temp.an <-
+          unlist(AnnotationDbi::mget(temp.psid, get(paste(apkgPrefix, "ACCNUM", sep = ""))))
+
+        ## LOCUSID is marked as deprecated as of Bioconductor 1.9
+        if(exists(paste(apkgPrefix, "ENTREZID", sep = "")))  {
+          temp.ll <-
+            unlist(AnnotationDbi::mget(temp.psid, get(paste(apkgPrefix, "ENTREZID", sep = ""))))
+        }else  {
+          temp.ll <-
+            unlist(AnnotationDbi::mget(temp.psid, get(paste(apkgPrefix, "LOCUSID", sep = ""))))
+        }
+
+        temp.gs <-
+          unlist(AnnotationDbi::mget(temp.psid, get(paste(apkgPrefix, "SYMBOL", sep = ""))))
+
+        ## workaround for gene names split up in BioConductor 1.7 annotations
+        temp.gn1 <- AnnotationDbi::mget(temp.psid, get(paste(apkgPrefix, "GENENAME", sep = "")))
       }
 
-      temp.gs <-
-        unlist(mget(temp.psid, get(paste(annotpkg, "SYMBOL", sep = ""))))
-
-      ## workaround for gene names split up in BioConductor 1.7 annotations
-      temp.gn1 <- mget(temp.psid, get(paste(annotpkg, "GENENAME", sep = "")))
       temp.gn <- unlist(lapply(temp.gn1, paste, collapse = ";"))
       
       psid.DF <- cbind(Probes = temp.psid, AccNum = temp.an, GeneID = temp.ll,
@@ -167,24 +193,49 @@ getPathwayStatistics.NGSk <-
     }
 
     if(!is.null(annotpkg))  {
+      apkgPrefix <- sub("[.]db", "", annotpkg)
       temp.psid <- as.character(psid.DF$Probes)
-      temp.an <-
-        unlist(mget(temp.psid, get(paste(annotpkg, "ACCNUM", sep = ""))))
 
-      ## LOCUSID is marked as deprecated as of Bioconductor 1.9
-      if(exists(paste(annotpkg, "ENTREZID", sep = "")))  {
-        temp.ll <-
-          unlist(mget(temp.psid, get(paste(annotpkg, "ENTREZID", sep = ""))))
+      ## As of Bioconductor 2.3, annotation packages are in SQLite format.
+      ## The below code with 'AnnotationDbi' is an inelegant fix for the
+      ## problem with mget() complaining about inputs
+      if(class(get(paste(apkgPrefix, "ACCNUM", sep = ""))) == "environment")  {
+        temp.an <-
+          unlist(mget(temp.psid, get(paste(apkgPrefix, "ACCNUM", sep = ""))))
+
+        ## LOCUSID is marked as deprecated as of Bioconductor 1.9
+        if(exists(paste(apkgPrefix, "ENTREZID", sep = "")))  {
+          temp.ll <-
+            unlist(mget(temp.psid, get(paste(apkgPrefix, "ENTREZID", sep = ""))))
+        }else  {
+          temp.ll <-
+            unlist(mget(temp.psid, get(paste(apkgPrefix, "LOCUSID", sep = ""))))
+        }
+
+        temp.gs <-
+          unlist(mget(temp.psid, get(paste(apkgPrefix, "SYMBOL", sep = ""))))
+        
+        ## workaround for gene names split up in BioConductor 1.7 annotations
+        temp.gn1 <- mget(temp.psid, get(paste(apkgPrefix, "GENENAME", sep = "")))
       }else  {
-        temp.ll <-
-          unlist(mget(temp.psid, get(paste(annotpkg, "LOCUSID", sep = ""))))
-      }
+        temp.an <-
+          unlist(AnnotationDbi::mget(temp.psid, get(paste(apkgPrefix, "ACCNUM", sep = ""))))
 
-      temp.gs <-
-        unlist(mget(temp.psid, get(paste(annotpkg, "SYMBOL", sep = ""))))
-      
-      ## workaround for gene names split up in BioConductor 1.7 annotations
-      temp.gn1 <- mget(temp.psid, get(paste(annotpkg, "GENENAME", sep = "")))
+        ## LOCUSID is marked as deprecated as of Bioconductor 1.9
+        if(exists(paste(apkgPrefix, "ENTREZID", sep = "")))  {
+          temp.ll <-
+            unlist(AnnotationDbi::mget(temp.psid, get(paste(apkgPrefix, "ENTREZID", sep = ""))))
+        }else  {
+          temp.ll <-
+            unlist(AnnotationDbi::mget(temp.psid, get(paste(apkgPrefix, "LOCUSID", sep = ""))))
+        }
+
+        temp.gs <-
+          unlist(AnnotationDbi::mget(temp.psid, get(paste(apkgPrefix, "SYMBOL", sep = ""))))
+        
+        ## workaround for gene names split up in BioConductor 1.7 annotations
+        temp.gn1 <- AnnotationDbi::mget(temp.psid, get(paste(apkgPrefix, "GENENAME", sep = "")))      
+      }
       temp.gn <- unlist(lapply(temp.gn1, paste, collapse = ";"))
       
       psid.DF <- cbind(Probes = temp.psid, AccNum = temp.an, GeneID = temp.ll,

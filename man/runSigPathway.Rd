@@ -101,7 +101,7 @@ verbose <- TRUE
 weightType <- "constant"
 npath <- 25
 allpathways <- FALSE
-annotpkg <- "hgu133a"
+annotpkg <- "hgu133a.db"
 
 res.muscle <- runSigPathway(G, 20, 500, tab, phenotype, nsim,
                             weightType, ngroups, npath, verbose,

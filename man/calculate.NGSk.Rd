@@ -65,7 +65,7 @@ weightType <- "constant"
 methodName <- "NGSk"
 npath <- 25
 allpathways <- FALSE
-annotpkg <- "hgu133a"
+annotpkg <- "hgu133a.db"
 
 statV <- calcTStatFast(tab, phenotype, ngroups)$tstat
 res.NGSk <- calculate.NGSk(statV, gsList, nsim, verbose)

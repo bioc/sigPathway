@@ -166,7 +166,7 @@ set.seed(1234)
 res.muscle <-
   runSigPathway(G, 20, 500, tab, phenotype, nsim = 1000,
                 weightType = "constant", ngroups = 2, npath = 25, 
-                verbose = FALSE, allpathways = FALSE, annotpkg = "hgu133a",
+                verbose = FALSE, allpathways = FALSE, annotpkg = "hgu133a.db",
                 alwaysUseRandomPerm = FALSE)
 @ 
 
@@ -212,9 +212,9 @@ ranked for each gene set statistic.
 Also, please note that out of the numerous input parameters to
 \Rfunction{runSigPathway}, \Robject{annotpkg} is optional because it
 refers to a Bioconductor metadata package that may not already be
-present on your installation of R.  In our example, 'hgu133a' refers
+present on your installation of R.  In our example, 'hgu133a.db' refers
 to the BioConductor metadata package of the Affymetrix HG-U133A
-platform.  By specifying 'hgu133a' for \Robject{annotpkg},
+platform.  By specifying 'hgu133a.db' for \Robject{annotpkg},
 \Rfunction{runSigPathway} will include the accession number, Entrez
 Gene ID, gene symbol, and gene name of probe sets associated with each
 pathway in the list of top pathways.

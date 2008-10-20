@@ -1,5 +1,11 @@
 Change Log for the sigPathway package
 
+* Version 1.9.2
+	- Bug Fix
+	  - added code to getPathwayStat.R such that the functions
+	    do not fail when processing newer annotation packages (e.g.,
+	    hgu133.db) with ".db" in their name
+
 * Version 1.5.2
 	- Bug Fix
 	  - changed one line in .convertDF2HTML() of writeHTML.R to

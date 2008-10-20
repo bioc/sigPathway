@@ -74,7 +74,7 @@ weightType <- "constant"
 methodNames <- c("NTk", "NEk")
 npath <- 25
 allpathways <- FALSE
-annotpkg <- "hgu133a"
+annotpkg <- "hgu133a.db"
 
 res.NTk <- calculate.NTk(tab, phenotype, gsList, nsim, ngroups, verbose)
 res.NEk <- calculate.NEk(tab, phenotype, gsList, nsim, weightType,
