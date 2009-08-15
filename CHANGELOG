@@ -1,5 +1,11 @@
 Change Log for the sigPathway package
 
+* Version 1.12.1
+	- Bug Fix
+	  - changed one line in rankPathways.R so that the "Percent Up"
+	    column is calculated appropriately according to the sort
+		order of the phenotype vector.
+
 * Version 1.9.2
 	- Bug Fix
 	  - added code to getPathwayStat.R such that the functions

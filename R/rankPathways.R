@@ -74,7 +74,7 @@ rankPathways <- function(res.A, res.B, G, tab, phenotype, gsList, ngroups,
     temp <- levels(factor(phenotype))
     meanV.0 <- rowMeans(tab[,phenotype == temp[1]])
     meanV.1 <- rowMeans(tab[,phenotype == temp[2]])
-    temp.up <- 1*(meanV.0 > meanV.1)
+    temp.up <- 1*(meanV.1 > meanV.0)
     
     percentUp <- numeric(length(idnew))
     for(i in 1:length(idnew))  {
