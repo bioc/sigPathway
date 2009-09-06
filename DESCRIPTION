@@ -1,13 +1,13 @@
 Package: sigPathway
 Type: Package
 Title: Pathway Analysis
-Version: 1.13.0
+Version: 1.13.1
 Date: 2008-10-19
 Author: Weil Lai (optimized R and C code), Lu Tian and Peter Park (algorithm development and initial R code)
 Maintainer: Weil Lai <wlai@alum.mit.edu>
 Depends: R (>= 2.0.0)
 Suggests: hgu133a.db (>= 1.10.0), XML (>= 1.6-3), AnnotationDbi (>= 1.3.12)
 Description: Conducts pathway analysis by calculating the NT_k and NE_k statistics as described in Tian et al. (2005)
-License: GPL 2
+License: GPL-2
 URL: http://www.pnas.org/cgi/doi/10.1073/pnas.0506577102, http://www.chip.org/~ppark/Supplements/PNAS05.html
 biocViews: Bioinformatics, DifferentialExpression, MultipleComparisons
