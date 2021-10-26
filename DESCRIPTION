@@ -1,7 +1,7 @@
 Package: sigPathway
 Type: Package
 Title: Pathway Analysis
-Version: 1.62.0
+Version: 1.63.0
 Date: 2008-10-19
 Author: Weil Lai (optimized R and C code), Lu Tian and Peter Park
         (algorithm development and initial R code)
