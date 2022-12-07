@@ -1,7 +1,7 @@
 Package: sigPathway
 Type: Package
 Title: Pathway Analysis
-Version: 1.67.0
+Version: 1.67.1
 Date: 2008-10-19
 Author: Weil Lai (optimized R and C code), Lu Tian and Peter Park
         (algorithm development and initial R code)
@@ -15,3 +15,4 @@ License: GPL-2
 URL: http://www.pnas.org/cgi/doi/10.1073/pnas.0506577102,
         http://www.chip.org/~ppark/Supplements/PNAS05.html
 biocViews: DifferentialExpression, MultipleComparison
+PackageStatus: Deprecated
